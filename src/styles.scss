@@ -1,1 +1,26 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --color-primary: #05183c;
+  --color-primary-deep: #06296b;
+  --color-primary-mid: #1a3c7d;
+  --color-accent: #0d56df;
+  --color-accent-soft: #417cea;
+  --color-bg: #ffffff;
+  --color-bg-muted: #f7f9fc;
+  --color-border: #e6eaf2;
+  --color-text: #05183c;
+  --color-text-muted: #5f6f8f;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: Inter, 'Segoe UI', Arial, sans-serif;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px;
+}

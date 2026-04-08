@@ -1,0 +1,13 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { environment } from '../../../environments/environment';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class HealthService {
+  constructor(private http: HttpClient) {}
+  check() {
+    return this.http.get<{ status: string }>(`${environment.apiUrl}/actuator/health`);
+  }
+}
