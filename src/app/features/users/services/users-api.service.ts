@@ -8,6 +8,7 @@ export interface UserResponse {
   email: string;
   role: 'ADMIN' | 'FINANCE';
   companyId: string;
+  companyName?: string | null;
   active: boolean;
 }
 

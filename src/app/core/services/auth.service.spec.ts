@@ -4,7 +4,7 @@ import { provideHttpClientTesting, HttpTestingController } from '@angular/common
 import { AuthService } from './auth.service';
 import { AuthApiService } from './auth-api.service';
 import { environment } from '../../../environments/environment';
-import { SESSION_TOKEN_KEY } from '../constants/auth-session';
+import { SESSION_EMAIL_KEY, SESSION_TOKEN_KEY } from '../constants/auth-session';
 
 function fakeJwt(payload: Record<string, unknown>): string {
   const header = btoa(JSON.stringify({ alg: 'HS256' }));
@@ -48,6 +48,8 @@ describe('AuthService', () => {
 
     expect(service.token).toBe(token);
     expect(sessionStorage.getItem(SESSION_TOKEN_KEY)).toBe(token);
+    expect(sessionStorage.getItem(SESSION_EMAIL_KEY)).toBe('user@test.com');
+    expect(service.email).toBe('user@test.com');
   });
 
   it('logout deve limpar token e sessionStorage', () => {
@@ -59,6 +61,7 @@ describe('AuthService', () => {
     expect(service.token).toBeNull();
     expect(service.isAuthenticated()).toBe(false);
     expect(sessionStorage.getItem(SESSION_TOKEN_KEY)).toBeNull();
+    expect(sessionStorage.getItem(SESSION_EMAIL_KEY)).toBeNull();
   });
 
   it('role deve ser extraída do JWT', () => {

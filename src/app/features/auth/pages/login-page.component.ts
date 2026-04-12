@@ -9,24 +9,48 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
-    <section class="card" style="max-width: 400px; margin: 80px auto;">
-      <h2>Login</h2>
-      <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <div>
-          <label>Email</label>
-          <input formControlName="email" type="email" />
-        </div>
-        <div>
-          <label>Password</label>
-          <input formControlName="password" type="password" />
-        </div>
-        <p *ngIf="error" style="color:red">{{ error }}</p>
-        <button type="submit" [disabled]="form.invalid || loading">
-          {{ loading ? 'Entrando...' : 'Entrar' }}
-        </button>
-      </form>
-      <p><a routerLink="/auth/register">Criar conta</a></p>
-    </section>
+    <div class="auth-layout">
+      <section class="card auth-card">
+        <p class="auth-card__brand">Financial Operations</p>
+        <h1 class="auth-card__title">Login</h1>
+        <p class="auth-card__subtitle">
+          Sign in to access your company dashboard and orders.
+        </p>
+        <form class="form-stack" [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="form-field">
+            <label for="login-email">Email</label>
+            <input
+              id="login-email"
+              formControlName="email"
+              type="email"
+              autocomplete="email"
+              placeholder="you@company.com"
+            />
+          </div>
+          <div class="form-field">
+            <label for="login-password">Password</label>
+            <input
+              id="login-password"
+              formControlName="password"
+              type="password"
+              autocomplete="current-password"
+              placeholder="••••••••"
+            />
+          </div>
+          <p *ngIf="error" class="form-error" role="alert">{{ error }}</p>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="form.invalid || loading"
+          >
+            {{ loading ? 'Signing in…' : 'Sign in' }}
+          </button>
+        </form>
+        <p class="auth-card__footer">
+          <a routerLink="/auth/register">Create an account</a>
+        </p>
+      </section>
+    </div>
   `,
 })
 export class LoginPageComponent {
@@ -43,17 +67,27 @@ export class LoginPageComponent {
   error = '';
 
   onSubmit() {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.loading = true;
     this.error = '';
-    this.auth.login(this.form.getRawValue() as any).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+    const credentials = this.form.getRawValue() as { email: string; password: string };
+    this.auth.login(credentials).subscribe({
+      next: () => {
+        if (credentials.email?.trim()) {
+          this.auth.rememberDisplayEmail(credentials.email);
+        }
+        void this.router.navigate(['/dashboard']);
+      },
       error: (err) => {
         this.loading = false;
         const fe = err.error?.fieldErrors as Record<string, string> | undefined;
         const firstField =
           fe && Object.keys(fe).length ? Object.values(fe)[0] : undefined;
-        this.error = firstField ?? err.error?.message ?? 'Erro ao fazer login';
+        this.error =
+          firstField ?? err.error?.message ?? 'Unable to sign in. Try again.';
       },
     });
   }

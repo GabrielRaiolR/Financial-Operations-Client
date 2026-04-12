@@ -20,79 +20,114 @@ interface DashboardStats {
   imports: [CommonModule, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <section style="max-width: 900px; margin: 40px auto; padding: 0 16px;">
-      <h1 style="color: var(--color-primary); margin-bottom: 8px;">Dashboard</h1>
-      <p style="color: var(--color-text-muted); margin-bottom: 24px;">
-        Bem-vindo de volta. Aqui tens um resumo das operações financeiras.
-      </p>
+    <section class="page-container">
+      <header class="page-head page-head--hero">
+        <h1>Operações financeiras</h1>
+        <p>Resumo das ordens e câmbio. Usa o menu à esquerda para navegar.</p>
+      </header>
 
-      <!-- Cards de resumo -->
-      <div
-        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px;"
-      >
-        <div class="card" style="text-align: center;" *ngIf="stats$ | async as stats">
-          <p style="font-size: 2rem; font-weight: 700; color: var(--color-primary); margin: 0;">
-            {{ stats.total }}
-          </p>
-          <p style="color: var(--color-text-muted); margin: 4px 0;">Total de ordens</p>
+      <ng-container *ngIf="stats$ | async as stats">
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-card__icon stat-card__icon--primary" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+              </svg>
+            </div>
+            <div class="stat-card__body">
+              <p class="stat-card__value">{{ stats.total }}</p>
+              <p class="stat-card__label">Total de ordens</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon stat-card__icon--warning" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </div>
+            <div class="stat-card__body">
+              <p class="stat-card__value stat-card__value--warning">{{ stats.pending }}</p>
+              <p class="stat-card__label">Pendentes</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon stat-card__icon--success" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
+            </div>
+            <div class="stat-card__body">
+              <p class="stat-card__value stat-card__value--success">{{ stats.approved }}</p>
+              <p class="stat-card__label">Aprovadas</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon stat-card__icon--danger" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="15" y1="9" x2="9" y2="15" />
+                <line x1="9" y1="9" x2="15" y2="15" />
+              </svg>
+            </div>
+            <div class="stat-card__body">
+              <p class="stat-card__value stat-card__value--danger">{{ stats.rejected }}</p>
+              <p class="stat-card__label">Rejeitadas</p>
+            </div>
+          </div>
         </div>
-        <div class="card" style="text-align: center;" *ngIf="stats$ | async as stats">
-          <p style="font-size: 2rem; font-weight: 700; color: #e6a100; margin: 0;">
-            {{ stats.pending }}
-          </p>
-          <p style="color: var(--color-text-muted); margin: 4px 0;">Pendentes</p>
-        </div>
-        <div class="card" style="text-align: center;" *ngIf="stats$ | async as stats">
-          <p style="font-size: 2rem; font-weight: 700; color: #1a8a3f; margin: 0;">
-            {{ stats.approved }}
-          </p>
-          <p style="color: var(--color-text-muted); margin: 4px 0;">Aprovadas</p>
-        </div>
-        <div class="card" style="text-align: center;" *ngIf="stats$ | async as stats">
-          <p style="font-size: 2rem; font-weight: 700; color: #c0392b; margin: 0;">
-            {{ stats.rejected }}
-          </p>
-          <p style="color: var(--color-text-muted); margin: 4px 0;">Rejeitadas</p>
-        </div>
-      </div>
+      </ng-container>
 
-      <!-- FX Rate -->
-      <div class="card" style="margin-bottom: 24px;" *ngIf="fxRate$ | async as fx">
-        <h3 style="margin-top: 0;">Cotação FX</h3>
-        <p style="font-size: 1.25rem;">
+      <div class="card" style="margin-bottom: 22px;" *ngIf="fxRate$ | async as fx">
+        <h3 class="fx-card__title">Cotação FX</h3>
+        <p class="fx-card__rate">
           <strong>{{ fx.from }} → {{ fx.to }}:</strong>
-          <span style="color: var(--color-accent); font-weight: 700;">
-            {{ fx.rate | number: '1.4-4' }}</span
-          >
+          <span class="fx-card__rate-num">{{ fx.rate | number: '1.4-4' }}</span>
         </p>
-        <p style="color: var(--color-text-muted); font-size: 0.875rem; margin: 8px 0 0;">
-          Fonte: {{ fx.source }} · {{ fx.asOf | date: 'short' }}
-        </p>
+        <p class="fx-card__meta muted">Fonte: {{ fx.source }} · {{ fx.asOf | date: 'short' }}</p>
       </div>
-      <div class="card" style="margin-bottom: 24px;" *ngIf="fxError$">
-        <h3 style="margin-top: 0;">Cotação FX</h3>
-        <p style="color: var(--color-text-muted);">{{ fxError$ }}</p>
+      <div class="card" style="margin-bottom: 22px;" *ngIf="fxError$">
+        <h3 class="fx-card__title">Cotação FX</h3>
+        <p class="muted">{{ fxError$ }}</p>
       </div>
 
-      <!-- Links rápidos -->
-      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-        <a
-          routerLink="/orders"
-          class="card"
-          style="text-decoration: none; color: var(--color-accent); font-weight: 600; padding: 12px 24px;"
-        >
-          Ver ordens →
-        </a>
-        <a
-          routerLink="/users"
-          class="card"
-          style="text-decoration: none; color: var(--color-accent); font-weight: 600; padding: 12px 24px;"
-          *ngIf="isAdmin"
-        >
-          Gerir utilizadores →
-        </a>
+      <div class="dash-actions">
+        <a routerLink="/orders" class="btn btn-primary btn-inline">Ver ordens</a>
+        <a routerLink="/users" class="btn btn-secondary" *ngIf="isAdmin">Gerir utilizadores</a>
       </div>
     </section>
+  `,
+  styles: `
+    .page-head--hero h1 {
+      font-size: clamp(1.5rem, 2.5vw, 1.875rem);
+    }
+    .fx-card__title {
+      margin: 0 0 12px;
+      font-size: 1.0625rem;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+    .fx-card__rate {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+    .fx-card__rate-num {
+      color: var(--color-accent);
+      font-weight: 800;
+      margin-left: 6px;
+    }
+    .fx-card__meta {
+      margin: 10px 0 0;
+      font-size: 0.875rem;
+    }
+    .dash-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
   `,
 })
 export class DashboardPageComponent implements OnInit {

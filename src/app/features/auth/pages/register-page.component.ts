@@ -10,28 +10,58 @@ import { RegisterRequest } from '../../../core/models/auth.model';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
-    <section class="card" style="max-width: 400px; margin: 80px auto;">
-      <h2>Criar conta</h2>
-      <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <div>
-          <label>Empresa</label>
-          <input formControlName="companyName" type="text" />
-        </div>
-        <div>
-          <label>Email</label>
-          <input formControlName="email" type="email" />
-        </div>
-        <div>
-          <label>Password</label>
-          <input formControlName="password" type="password" />
-        </div>
-        <p *ngIf="error" style="color:red">{{ error }}</p>
-        <button type="submit" [disabled]="form.invalid || loading">
-          {{ loading ? 'Criando...' : 'Registar' }}
-        </button>
-      </form>
-      <p><a routerLink="/auth/login">Já tenho conta</a></p>
-    </section>
+    <div class="auth-layout">
+      <section class="card auth-card">
+        <p class="auth-card__brand">Financial Operations</p>
+        <h1 class="auth-card__title">Create account</h1>
+        <p class="auth-card__subtitle">
+          Register your company and first admin user. Password: 8–72 characters.
+        </p>
+        <form class="form-stack" [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="form-field">
+            <label for="reg-company">Company name</label>
+            <input
+              id="reg-company"
+              formControlName="companyName"
+              type="text"
+              autocomplete="organization"
+              placeholder="Acme Inc."
+            />
+          </div>
+          <div class="form-field">
+            <label for="reg-email">Email</label>
+            <input
+              id="reg-email"
+              formControlName="email"
+              type="email"
+              autocomplete="email"
+              placeholder="you@company.com"
+            />
+          </div>
+          <div class="form-field">
+            <label for="reg-password">Password</label>
+            <input
+              id="reg-password"
+              formControlName="password"
+              type="password"
+              autocomplete="new-password"
+              placeholder="••••••••"
+            />
+          </div>
+          <p *ngIf="error" class="form-error" role="alert">{{ error }}</p>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="form.invalid || loading"
+          >
+            {{ loading ? 'Creating…' : 'Create account' }}
+          </button>
+        </form>
+        <p class="auth-card__footer">
+          <a routerLink="/auth/login">Already have an account? Sign in</a>
+        </p>
+      </section>
+    </div>
   `,
 })
 export class RegisterPageComponent {
@@ -63,18 +93,27 @@ export class RegisterPageComponent {
   error = '';
 
   onSubmit() {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.loading = true;
     this.error = '';
     const payload = this.form.getRawValue() as RegisterRequest;
     this.auth.register(payload).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => {
+        if (payload.email?.trim()) {
+          this.auth.rememberDisplayEmail(payload.email);
+        }
+        void this.router.navigate(['/dashboard']);
+      },
       error: (err) => {
         this.loading = false;
         const fe = err.error?.fieldErrors as Record<string, string> | undefined;
         const firstField =
           fe && Object.keys(fe).length ? Object.values(fe)[0] : undefined;
-        this.error = firstField ?? err.error?.message ?? 'Erro ao registar';
+        this.error =
+          firstField ?? err.error?.message ?? 'Registration failed. Try again.';
       },
     });
   }

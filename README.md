@@ -2,6 +2,13 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.6.
 
+## Papéis e ordens financeiras
+
+- **ADMIN** e **FINANCE** podem criar e listar ordens; **apenas ADMIN** vê **Aprovar** e **Rejeitar** na lista (botões empilhados na coluna Acções; **Rejeitar** usa `prompt` opcional para o motivo — ver `FRONT_ANGULAR_GUIA.md`). Backend: `POST .../approve` e `POST .../reject` com `ROLE_ADMIN`.
+- Utilizadores **FINANCE** veem ordens pendentes com texto informativo em vez dos botões (ex.: *Aguardando aprovação* — ver `FRONTEND_DESIGN_UX.md`).
+
+Documentação detalhada: **`FRONT_ANGULAR_GUIA.md`** (estrutura, guards, API) e **`FRONTEND_DESIGN_UX.md`** (UX e copy).
+
 ## Development server
 
 To start a local development server, run:

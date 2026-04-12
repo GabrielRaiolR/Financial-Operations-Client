@@ -15,114 +15,157 @@ import { SpringPage } from '../../../core/models/page.model';
   imports: [CommonModule, ReactiveFormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <section class="card" style="max-width: 800px; margin: 40px auto;">
-      <h2>Gestão de utilizadores</h2>
+    <div class="page-container">
+      <header class="page-head">
+        <h1>Gestão de utilizadores</h1>
+        <p>Criar contas e rever permissões da equipa.</p>
+      </header>
 
-      <details style="margin-bottom: 16px;">
-        <summary style="cursor: pointer; font-weight: 600;">
-          + Criar utilizador
-        </summary>
-        <form
-          [formGroup]="createForm"
-          (ngSubmit)="onCreate()"
-          style="margin-top: 12px;"
-        >
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <input
-              formControlName="email"
-              placeholder="Email"
-              type="email"
-              style="flex: 1;"
-            />
-            <input
-              formControlName="password"
-              placeholder="Password"
-              type="password"
-              style="flex: 1;"
-            />
-            <select formControlName="role">
-              <option value="ADMIN">ADMIN</option>
-              <option value="FINANCE">FINANCE</option>
-            </select>
+      <section class="card" style="margin-bottom: 20px;">
+        <details>
+          <summary class="details-summary">+ Criar utilizador</summary>
+          <form [formGroup]="createForm" (ngSubmit)="onCreate()" class="create-user-form">
+            <div class="create-user-form__row">
+              <input
+                formControlName="email"
+                placeholder="Email"
+                type="email"
+                class="create-user-form__input"
+              />
+              <input
+                formControlName="password"
+                placeholder="Password"
+                type="password"
+                class="create-user-form__input"
+              />
+              <select formControlName="role" class="create-user-form__select">
+                <option value="ADMIN">ADMIN</option>
+                <option value="FINANCE">FINANCE</option>
+              </select>
+              <button
+                type="submit"
+                class="btn btn-primary btn-inline"
+                [disabled]="createForm.invalid || (loading$ | async)"
+              >
+                Criar
+              </button>
+            </div>
+            <p *ngIf="createError" class="form-error">{{ createError }}</p>
+          </form>
+        </details>
+      </section>
+
+      <section class="card">
+        <div *ngIf="loading$ | async" class="muted" style="padding: 8px 0;">A carregar…</div>
+
+        <ng-container *ngIf="page$ | async as page">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Empresa</th>
+                <th>Role</th>
+                <th>Activo</th>
+                <th>Acções</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of page.content; trackBy: trackById">
+                <td>{{ user.email }}</td>
+                <td>
+                  <span class="company-cell">{{ companyLabel(user) }}</span>
+                </td>
+                <td>
+                  <span
+                    [style.color]="
+                      user.role === 'ADMIN'
+                        ? 'var(--color-accent)'
+                        : 'var(--color-text-muted)'
+                    "
+                  >
+                    {{ user.role }}
+                  </span>
+                </td>
+                <td>{{ user.active ? 'Sim' : 'Não' }}</td>
+                <td>
+                  <button type="button" class="btn-danger-outline" (click)="onDelete(user)">
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="pagination-bar">
             <button
-              type="submit"
-              [disabled]="createForm.invalid || (loading$ | async)"
+              type="button"
+              class="btn btn-ghost btn-sm"
+              [disabled]="page.first"
+              (click)="loadPage(page.number - 1)"
             >
-              Criar
+              Anterior
+            </button>
+            <span class="muted">Página {{ page.number + 1 }} de {{ page.totalPages }}</span>
+            <button
+              type="button"
+              class="btn btn-ghost btn-sm"
+              [disabled]="page.last"
+              (click)="loadPage(page.number + 1)"
+            >
+              Seguinte
             </button>
           </div>
-          <p *ngIf="createError" style="color: red; margin-top: 4px;">
-            {{ createError }}
-          </p>
-        </form>
-      </details>
-
-      <div *ngIf="loading$ | async">Carregando...</div>
-
-      <ng-container *ngIf="page$ | async as page">
-        <table style="width: 100%; border-collapse: collapse;">
-          <thead>
-            <tr
-              style="text-align: left; border-bottom: 2px solid var(--color-border);"
-            >
-              <th style="padding: 8px;">Email</th>
-              <th style="padding: 8px;">Role</th>
-              <th style="padding: 8px;">Activo</th>
-              <th style="padding: 8px;">Acções</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              *ngFor="let user of page.content; trackBy: trackById"
-              style="border-bottom: 1px solid var(--color-border);"
-            >
-              <td style="padding: 8px;">{{ user.email }}</td>
-              <td style="padding: 8px;">
-                <span
-                  [style.color]="
-                    user.role === 'ADMIN'
-                      ? 'var(--color-accent)'
-                      : 'var(--color-text-muted)'
-                  "
-                >
-                  {{ user.role }}
-                </span>
-              </td>
-              <td style="padding: 8px;">{{ user.active ? 'Sim' : 'Não' }}</td>
-              <td style="padding: 8px;">
-                <button
-                  type="button"
-                  (click)="onDelete(user)"
-                  style="color: red; background: none; border: 1px solid red; border-radius: 4px; cursor: pointer;"
-                >
-                  Eliminar
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div
-          style="margin-top: 12px; display: flex; gap: 8px; align-items: center;"
-        >
-          <button
-            type="button"
-            [disabled]="page.first"
-            (click)="loadPage(page.number - 1)"
-          >
-            Anterior
-          </button>
-          <span>Página {{ page.number + 1 }} de {{ page.totalPages }}</span>
-          <button
-            type="button"
-            [disabled]="page.last"
-            (click)="loadPage(page.number + 1)"
-          >
-            Seguinte
-          </button>
-        </div>
-      </ng-container>
-    </section>
+        </ng-container>
+      </section>
+    </div>
+  `,
+  styles: `
+    .details-summary {
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      color: var(--color-accent);
+      list-style: none;
+    }
+    .details-summary::-webkit-details-marker {
+      display: none;
+    }
+    .create-user-form {
+      margin-top: 16px;
+    }
+    .create-user-form__row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .create-user-form__input,
+    .create-user-form__select {
+      flex: 1;
+      min-width: 160px;
+      padding: 10px 12px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      background: var(--color-bg);
+      color: var(--color-text);
+    }
+    .create-user-form__select {
+      flex: 0 1 140px;
+      min-width: 120px;
+    }
+    .pagination-bar {
+      margin-top: 16px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .company-cell {
+      font-size: 0.9375rem;
+      color: var(--color-text);
+    }
   `,
 })
 export class UsersListPageComponent {
@@ -185,5 +228,13 @@ export class UsersListPageComponent {
 
   trackById(_: number, item: UserResponse) {
     return item.id;
+  }
+
+  companyLabel(user: UserResponse): string {
+    const name = user.companyName?.trim();
+    if (name) return name;
+    const cid = user.companyId?.trim();
+    if (!cid) return '—';
+    return cid.length > 14 ? `${cid.slice(0, 8)}…` : cid;
   }
 }

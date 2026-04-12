@@ -1,0 +1,65 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  flex: 1;
+  min-height: 0;
+}
+
+.app-main--auth {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+.sidebar-edge-toggle {
+  display: none;
+}
+
+@media (min-width: 961px) {
+  .sidebar-edge-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    z-index: 220;
+    top: 50%;
+    left: calc(var(--sidebar-width) - 15px);
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    background: var(--color-bg);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    box-shadow:
+      0 1px 3px rgb(5 24 60 / 0.08),
+      0 4px 14px rgb(5 24 60 / 0.07);
+    transition:
+      left 0.22s ease,
+      color 0.15s ease,
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .sidebar-edge-toggle:hover {
+    color: var(--color-accent);
+    border-color: rgb(13 86 223 / 0.35);
+  }
+
+  .app-layout--sidebar-collapsed .sidebar-edge-toggle {
+    left: calc(76px - 15px);
+  }
+}
