@@ -22,8 +22,8 @@ interface DashboardStats {
   template: `
     <section class="page-container">
       <header class="page-head page-head--hero">
-        <h1>Operações financeiras</h1>
-        <p>Resumo das ordens e câmbio. Usa o menu à esquerda para navegar.</p>
+        <h1>Financial operations</h1>
+        <p>Summary of orders and FX. Use the menu on the left to navigate.</p>
       </header>
 
       <ng-container *ngIf="stats$ | async as stats">
@@ -37,7 +37,7 @@ interface DashboardStats {
             </div>
             <div class="stat-card__body">
               <p class="stat-card__value">{{ stats.total }}</p>
-              <p class="stat-card__label">Total de ordens</p>
+              <p class="stat-card__label">Total orders</p>
             </div>
           </div>
           <div class="stat-card">
@@ -49,7 +49,7 @@ interface DashboardStats {
             </div>
             <div class="stat-card__body">
               <p class="stat-card__value stat-card__value--warning">{{ stats.pending }}</p>
-              <p class="stat-card__label">Pendentes</p>
+              <p class="stat-card__label">Pending</p>
             </div>
           </div>
           <div class="stat-card">
@@ -61,7 +61,7 @@ interface DashboardStats {
             </div>
             <div class="stat-card__body">
               <p class="stat-card__value stat-card__value--success">{{ stats.approved }}</p>
-              <p class="stat-card__label">Aprovadas</p>
+              <p class="stat-card__label">Approved</p>
             </div>
           </div>
           <div class="stat-card">
@@ -74,28 +74,28 @@ interface DashboardStats {
             </div>
             <div class="stat-card__body">
               <p class="stat-card__value stat-card__value--danger">{{ stats.rejected }}</p>
-              <p class="stat-card__label">Rejeitadas</p>
+              <p class="stat-card__label">Rejected</p>
             </div>
           </div>
         </div>
       </ng-container>
 
       <div class="card" style="margin-bottom: 22px;" *ngIf="fxRate$ | async as fx">
-        <h3 class="fx-card__title">Cotação FX</h3>
+        <h3 class="fx-card__title">FX rate</h3>
         <p class="fx-card__rate">
           <strong>{{ fx.from }} → {{ fx.to }}:</strong>
           <span class="fx-card__rate-num">{{ fx.rate | number: '1.4-4' }}</span>
         </p>
-        <p class="fx-card__meta muted">Fonte: {{ fx.source }} · {{ fx.asOf | date: 'short' }}</p>
+        <p class="fx-card__meta muted">Source: {{ fx.source }} · {{ fx.asOf | date: 'short' }}</p>
       </div>
       <div class="card" style="margin-bottom: 22px;" *ngIf="fxError$">
-        <h3 class="fx-card__title">Cotação FX</h3>
+        <h3 class="fx-card__title">FX rate</h3>
         <p class="muted">{{ fxError$ }}</p>
       </div>
 
       <div class="dash-actions">
-        <a routerLink="/orders" class="btn btn-primary btn-inline">Ver ordens</a>
-        <a routerLink="/users" class="btn btn-secondary" *ngIf="isAdmin">Gerir utilizadores</a>
+        <a routerLink="/orders" class="btn btn-primary btn-inline">View orders</a>
+        <a routerLink="/users" class="btn btn-secondary" *ngIf="isAdmin">Manage users</a>
       </div>
     </section>
   `,
@@ -182,7 +182,7 @@ export class DashboardPageComponent implements OnInit {
       next: (rate) => this.fxRate$.next(rate),
       error: () => {
         this.fxError$ =
-          'Não foi possível carregar a cotação. O serviço FX pode estar indisponível.';
+          'Could not load the exchange rate. The FX service may be unavailable.';
       },
     });
   }

@@ -35,18 +35,18 @@ export class App {
     if (email) return email;
     const sub = this.userSub()?.trim();
     if (sub?.includes('@')) return sub;
-    if (sub && isLikelyUuid(sub)) return 'Sessão sem email visível';
+    if (sub && isLikelyUuid(sub)) return 'No email in session';
     if (sub) return sub;
-    return 'Convidado';
+    return 'Guest';
   });
 
   readonly userInitials = computed(() => {
     const line = this.userDisplayLine();
-    if (line === 'Sessão sem email visível') return '?';
+    if (line === 'No email in session') return '?';
     return initialsForDisplay(line);
   });
 
-  readonly roleLabel = computed(() => roleLabelPt(this.userRole()));
+  readonly roleLabel = computed(() => roleLabelEn(this.userRole()));
 
   readonly onAuthRoute = toSignal(
     this.router.events.pipe(
@@ -113,7 +113,7 @@ function readSidebarCollapsedPref(): boolean {
 }
 
 function initialsForDisplay(line: string): string {
-  if (line === 'Convidado') return '—';
+  if (line === 'Guest') return '—';
   if (line.includes('@')) return initialsFromSub(line);
   const alnum = line.replace(/[^a-zA-Z0-9]/g, '');
   if (alnum.length >= 2) return alnum.slice(0, 2).toUpperCase();
@@ -133,8 +133,8 @@ function initialsFromSub(sub: string | null): string {
   return base.slice(0, 2).toUpperCase();
 }
 
-function roleLabelPt(role: 'ADMIN' | 'FINANCE' | null): string {
-  if (role === 'ADMIN') return 'Administrador';
-  if (role === 'FINANCE') return 'Finanças';
-  return 'Convidado';
+function roleLabelEn(role: 'ADMIN' | 'FINANCE' | null): string {
+  if (role === 'ADMIN') return 'Administrator';
+  if (role === 'FINANCE') return 'Finance';
+  return 'Guest';
 }

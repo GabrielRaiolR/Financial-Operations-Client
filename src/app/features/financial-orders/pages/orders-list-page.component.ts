@@ -27,13 +27,13 @@ import type {
   template: `
     <div class="page-container">
       <header class="page-head">
-        <h1>Ordens financeiras</h1>
-        <p>Cria ordens, filtra por estado; como administrador, podes aprovar ou rejeitar pendentes.</p>
+        <h1>Financial orders</h1>
+        <p>Create orders and filter by status; as an administrator you can approve or reject pending ones.</p>
       </header>
 
       <section class="card" style="margin-bottom: 16px;">
         <details>
-          <summary class="orders-create-summary">+ Nova ordem</summary>
+          <summary class="orders-create-summary">+ New order</summary>
           <form
             [formGroup]="createForm"
             (ngSubmit)="onCreate()"
@@ -41,14 +41,14 @@ import type {
           >
             <div class="orders-create-form__row">
               <label class="orders-create-form__field">
-                <span class="orders-create-form__label">Tipo</span>
+                <span class="orders-create-form__label">Type</span>
                 <select formControlName="type" class="orders-create-form__input">
-                  <option value="PAYABLE">A pagar</option>
-                  <option value="RECEIVABLE">A receber</option>
+                  <option value="PAYABLE">Payable</option>
+                  <option value="RECEIVABLE">Receivable</option>
                 </select>
               </label>
               <label class="orders-create-form__field">
-                <span class="orders-create-form__label">Valor (mín. 0,01)</span>
+                <span class="orders-create-form__label">Amount (min. 0.01)</span>
                 <input
                   type="number"
                   step="0.01"
@@ -58,12 +58,12 @@ import type {
                 />
               </label>
               <label class="orders-create-form__field orders-create-form__field--grow">
-                <span class="orders-create-form__label">Descrição</span>
+                <span class="orders-create-form__label">Description</span>
                 <input
                   type="text"
                   formControlName="description"
                   class="orders-create-form__input"
-                  placeholder="Ex.: Factura fornecedor #123"
+                  placeholder="e.g. Vendor invoice #123"
                 />
               </label>
               <button
@@ -71,7 +71,7 @@ import type {
                 class="btn btn-primary btn-inline"
                 [disabled]="createForm.invalid || createLoading"
               >
-                Criar
+                Create
               </button>
             </div>
             <p *ngIf="createError" class="form-error">{{ createError }}</p>
@@ -80,35 +80,35 @@ import type {
       </section>
 
       <section class="card" style="margin-bottom: 16px;">
-        <div class="segmented" role="group" aria-label="Filtro de ordens">
+        <div class="segmented" role="group" aria-label="Order filter">
           <button
             type="button"
             [class.is-selected]="activeFilter === 'PENDING'"
             (click)="filter('PENDING')"
           >
-            Pendentes
+            Pending
           </button>
           <button
             type="button"
             [class.is-selected]="activeFilter === 'ALL'"
             (click)="filter()"
           >
-            Todas
+            All
           </button>
         </div>
       </section>
 
       <section class="card">
-        <div *ngIf="state.loading$ | async" class="muted" style="padding: 8px 0;">A carregar…</div>
+        <div *ngIf="state.loading$ | async" class="muted" style="padding: 8px 0;">Loading…</div>
         <div *ngIf="state.page$ | async as page" class="orders-table-scroll">
           <table class="data-table orders-table">
             <thead>
               <tr>
-                <th>Descrição</th>
-                <th>Tipo</th>
-                <th>Valor</th>
-                <th>Estado</th>
-                <th class="orders-table__th-actions">Acções</th>
+                <th>Description</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th class="orders-table__th-actions">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -127,21 +127,21 @@ import type {
                         type="button"
                         class="btn btn-secondary btn-sm"
                         (click)="approve(item.id)"
-                        aria-label="Aprovar ordem pendente"
+                        aria-label="Approve pending order"
                       >
-                        Aprovar
+                        Approve
                       </button>
                       <button
                         type="button"
                         class="btn btn-danger-outline btn-sm"
                         (click)="reject(item.id)"
-                        aria-label="Rejeitar ordem pendente"
+                        aria-label="Reject pending order"
                       >
-                        Rejeitar
+                        Reject
                       </button>
                     </div>
                     <span *ngIf="auth.role !== 'ADMIN'" class="muted"
-                      >Aguardando aprovação</span
+                      >Awaiting approval</span
                     >
                   </ng-container>
                   <span *ngIf="item.status !== 'PENDING'" class="muted">—</span>
@@ -224,7 +224,7 @@ export class OrdersListPageComponent {
   private fb = inject(FormBuilder);
   private cdr = inject(ChangeDetectorRef);
 
-  /** Mantém o filtro activo ao recarregar após aprovar/rejeitar. */
+  /** Keeps the active filter when reloading after approve/reject. */
   private listStatus?: OrderStatus;
   activeFilter: 'PENDING' | 'ALL' = 'ALL';
 
@@ -257,7 +257,7 @@ export class OrdersListPageComponent {
     const raw = this.createForm.getRawValue();
     const amount = Number(raw.amount);
     if (Number.isNaN(amount) || amount < 0.01) {
-      this.createError = 'Indica um valor válido (mínimo 0,01).';
+      this.createError = 'Enter a valid amount (minimum 0.01).';
       return;
     }
     this.createLoading = true;
@@ -285,7 +285,7 @@ export class OrdersListPageComponent {
           const firstField =
             fe && Object.keys(fe).length ? Object.values(fe)[0] : undefined;
           this.createError =
-            firstField ?? err.error?.message ?? 'Não foi possível criar a ordem.';
+            firstField ?? err.error?.message ?? 'Could not create the order.';
           this.cdr.markForCheck();
         },
       });
@@ -306,7 +306,7 @@ export class OrdersListPageComponent {
 
   reject(id: string) {
     const input = window.prompt(
-      'Motivo da rejeição (opcional). Deixa em branco e confirma para rejeitar sem texto. Cancelar aborta.',
+      'Rejection reason (optional). Leave blank and confirm to reject without a note. Cancel aborts.',
       '',
     );
     if (input === null) {

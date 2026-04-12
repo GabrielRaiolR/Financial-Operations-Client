@@ -17,13 +17,13 @@ import { SpringPage } from '../../../core/models/page.model';
   template: `
     <div class="page-container">
       <header class="page-head">
-        <h1>Gestão de utilizadores</h1>
-        <p>Criar contas e rever permissões da equipa.</p>
+        <h1>User management</h1>
+        <p>Create accounts and manage team permissions.</p>
       </header>
 
       <section class="card" style="margin-bottom: 20px;">
         <details>
-          <summary class="details-summary">+ Criar utilizador</summary>
+          <summary class="details-summary">+ Create user</summary>
           <form [formGroup]="createForm" (ngSubmit)="onCreate()" class="create-user-form">
             <div class="create-user-form__row">
               <input
@@ -47,7 +47,7 @@ import { SpringPage } from '../../../core/models/page.model';
                 class="btn btn-primary btn-inline"
                 [disabled]="createForm.invalid || (loading$ | async)"
               >
-                Criar
+                Create
               </button>
             </div>
             <p *ngIf="createError" class="form-error">{{ createError }}</p>
@@ -56,17 +56,17 @@ import { SpringPage } from '../../../core/models/page.model';
       </section>
 
       <section class="card">
-        <div *ngIf="loading$ | async" class="muted" style="padding: 8px 0;">A carregar…</div>
+        <div *ngIf="loading$ | async" class="muted" style="padding: 8px 0;">Loading…</div>
 
         <ng-container *ngIf="page$ | async as page">
           <table class="data-table">
             <thead>
               <tr>
                 <th>Email</th>
-                <th>Empresa</th>
+                <th>Company</th>
                 <th>Role</th>
-                <th>Activo</th>
-                <th>Acções</th>
+                <th>Active</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -86,10 +86,10 @@ import { SpringPage } from '../../../core/models/page.model';
                     {{ user.role }}
                   </span>
                 </td>
-                <td>{{ user.active ? 'Sim' : 'Não' }}</td>
+                <td>{{ user.active ? 'Yes' : 'No' }}</td>
                 <td>
                   <button type="button" class="btn-danger-outline" (click)="onDelete(user)">
-                    Eliminar
+                    Delete
                   </button>
                 </td>
               </tr>
@@ -103,16 +103,16 @@ import { SpringPage } from '../../../core/models/page.model';
               [disabled]="page.first"
               (click)="loadPage(page.number - 1)"
             >
-              Anterior
+              Previous
             </button>
-            <span class="muted">Página {{ page.number + 1 }} de {{ page.totalPages }}</span>
+            <span class="muted">Page {{ page.number + 1 }} of {{ page.totalPages }}</span>
             <button
               type="button"
               class="btn btn-ghost btn-sm"
               [disabled]="page.last"
               (click)="loadPage(page.number + 1)"
             >
-              Seguinte
+              Next
             </button>
           </div>
         </ng-container>
@@ -215,13 +215,13 @@ export class UsersListPageComponent {
         const firstField =
           fe && Object.keys(fe).length ? Object.values(fe)[0] : undefined;
         this.createError =
-          firstField ?? err.error?.message ?? 'Erro ao criar utilizador';
+          firstField ?? err.error?.message ?? 'Could not create user';
       },
     });
   }
 
   onDelete(user: UserResponse) {
-    if (!confirm(`Eliminar ${user.email}?`)) return;
+    if (!confirm(`Delete ${user.email}?`)) return;
     const currentPage = this.page$.value?.number ?? 0;
     this.api.delete(user.id).subscribe(() => this.loadPage(currentPage));
   }

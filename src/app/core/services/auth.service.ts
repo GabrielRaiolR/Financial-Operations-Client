@@ -88,7 +88,7 @@ export class AuthService {
   }
 
   private setSession(token: string, formEmail?: string) {
-    if (!token) throw new Error('Token ausente na resposta');
+    if (!token) throw new Error('No token in response');
     sessionStorage.setItem(SESSION_TOKEN_KEY, token);
     this.updateClaims(token, formEmail);
   }
