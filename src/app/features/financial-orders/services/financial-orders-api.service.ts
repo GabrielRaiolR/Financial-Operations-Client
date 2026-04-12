@@ -2,19 +2,18 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import {
-  FinancialOrderRequest,
+  CreateFinancialOrderRequest,
   FinancialOrderResponse,
+  OrderStatus,
   RejectFinancialOrderRequest,
 } from '../../../core/models/order.model';
 import { SpringPage } from '../../../core/models/page.model';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class FinancialOrdersApiService {
   constructor(private http: HttpClient) {}
 
-  list(page = 0, size = 20, status?: string) {
+  list(page = 0, size = 20, status?: OrderStatus) {
     let params = new HttpParams().set('page', page).set('size', size);
     if (status) params = params.set('status', status);
     return this.http.get<SpringPage<FinancialOrderResponse>>(
@@ -23,7 +22,13 @@ export class FinancialOrdersApiService {
     );
   }
 
-  create(payload: FinancialOrderRequest) {
+  getById(id: string) {
+    return this.http.get<FinancialOrderResponse>(
+      `${environment.apiUrl}/financial-orders/${id}`,
+    );
+  }
+
+  create(payload: CreateFinancialOrderRequest) {
     return this.http.post<FinancialOrderResponse>(
       `${environment.apiUrl}/financial-orders`,
       payload,

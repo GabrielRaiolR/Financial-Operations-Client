@@ -3,32 +3,39 @@ import { CommonModule } from '@angular/common';
 import { OrdersStateService } from '../services/orders-state.service';
 import { FinancialOrdersApiService } from '../services/financial-orders-api.service';
 import { tap } from 'rxjs';
-import type { FinancialOrderResponse, OrderStatus } from '../../../core/models/order.model';
+import type {
+  FinancialOrderResponse,
+  OrderStatus,
+} from '../../../core/models/order.model';
 
 @Component({
-  selector: 'app-orders-list-page',
   standalone: true,
+  selector: 'app-orders-list-page',
   imports: [CommonModule],
-  template: `<section class="card">
-    <h2>Ordens financeiras</h2>
-    <button type="button" (click)="filter('PENDING')">PENDENTES</button>
-    <button type="button" (click)="filter()">TODAS</button>
-    <div *ngIf="state.loading$ | async">Carregando...</div>
-    <table *ngIf="state.page$ | async as page">
-      <tr *ngFor="let item of page.content; trackBy: trackById">
-        <td>{{ item.description }}</td>
-        <td>{{ item.amount }}</td>
-        <td>{{ item.status }}</td>
-        <td>
-          <button type="button" (click)="approve(item.id)">Aprovar</button>
-          <button type="button" (click)="reject(item.id)">Rejeitar</button>
-        </td>
-      </tr>
-    </table>
-  </section>`,
+  template: `
+    <section class="card">
+      <h2>Ordens financeiras</h2>
+      <button type="button" (click)="filter('PENDING')">PENDENTES</button>
+      <button type="button" (click)="filter()">TODAS</button>
+      <div *ngIf="state.loading$ | async">Carregando...</div>
+      <table *ngIf="state.page$ | async as page">
+        <tr *ngFor="let item of page.content; trackBy: trackById">
+          <td>{{ item.description }}</td>
+          <td>{{ item.amount }}</td>
+          <td>{{ item.status }}</td>
+          <td *ngIf="item.status === 'PENDING'">
+            <button type="button" (click)="approve(item.id)">Aprovar</button>
+            <button type="button" (click)="reject(item.id)">Rejeitar</button>
+          </td>
+          <td *ngIf="item.status !== 'PENDING'">—</td>
+        </tr>
+      </table>
+    </section>
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrdersListPageComponent {
+  /** Mantém o filtro activo ao recarregar após aprovar/rejeitar. */
   private listStatus?: OrderStatus;
 
   constructor(
@@ -52,7 +59,7 @@ export class OrdersListPageComponent {
 
   reject(id: string) {
     this.api
-      .reject(id, 'Reprovando via UI')
+      .reject(id, 'Reprovado via UI')
       .pipe(tap(() => this.state.load(0, 20, this.listStatus)))
       .subscribe();
   }

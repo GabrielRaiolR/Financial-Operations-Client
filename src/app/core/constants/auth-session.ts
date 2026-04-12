@@ -1,1 +1,2 @@
-export const AUTH_SESSION_KEY = 'auth-session';
+/** Mesma chave usada em `AuthService` (`sessionStorage`). */
+export const SESSION_TOKEN_KEY = 'finops.session.token';

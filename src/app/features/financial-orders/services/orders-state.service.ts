@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, finalize } from 'rxjs';
 import { SpringPage } from '../../../core/models/page.model';
-import { FinancialOrderResponse } from '../../../core/models/order.model';
+import {
+  FinancialOrderResponse,
+  OrderStatus,
+} from '../../../core/models/order.model';
 import { FinancialOrdersApiService } from './financial-orders-api.service';
 
 @Injectable({ providedIn: 'root' })
@@ -11,7 +14,7 @@ export class OrdersStateService {
 
   constructor(private api: FinancialOrdersApiService) {}
 
-  load(page = 0, size = 20, status?: string) {
+  load(page = 0, size = 20, status?: OrderStatus) {
     this.loading$.next(true);
     this.api
       .list(page, size, status)

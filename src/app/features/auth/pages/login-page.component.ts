@@ -50,7 +50,10 @@ export class LoginPageComponent {
       next: () => this.router.navigate(['/dashboard']),
       error: (err) => {
         this.loading = false;
-        this.error = err.error?.message ?? 'Erro ao fazer login';
+        const fe = err.error?.fieldErrors as Record<string, string> | undefined;
+        const firstField =
+          fe && Object.keys(fe).length ? Object.values(fe)[0] : undefined;
+        this.error = firstField ?? err.error?.message ?? 'Erro ao fazer login';
       },
     });
   }

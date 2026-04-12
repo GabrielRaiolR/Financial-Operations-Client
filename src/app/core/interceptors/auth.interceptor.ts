@@ -1,12 +1,11 @@
 import { HttpInterceptorFn } from '@angular/common/http';
-import { AUTH_SESSION_KEY } from '../constants/auth-session';
+import { SESSION_TOKEN_KEY } from '../constants/auth-session';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const token = sessionStorage.getItem(AUTH_SESSION_KEY);
+  const token = sessionStorage.getItem(SESSION_TOKEN_KEY);
   if (!token) {
     return next(req);
   }
-  // Opcional: não enviar Bearer em login/register (evita token antigo).
   const url = req.url.toLowerCase();
   if (url.includes('/auth/login') || url.includes('/auth/register')) {
     return next(req);

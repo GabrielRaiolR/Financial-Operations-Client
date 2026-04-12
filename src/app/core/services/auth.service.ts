@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, tap } from 'rxjs';
+import { SESSION_TOKEN_KEY } from '../constants/auth-session';
 import { AuthApiService } from './auth-api.service';
 import { LoginRequest, RegisterRequest } from '../models/auth.model';
 
@@ -10,12 +11,10 @@ type SessionState = {
   role: 'ADMIN' | 'FINANCE' | null;
 };
 
-const STORAGE_KEY = 'finops.session.token';
-
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private stateSubject = new BehaviorSubject<SessionState>({
-    token: sessionStorage.getItem(STORAGE_KEY),
+    token: sessionStorage.getItem(SESSION_TOKEN_KEY),
     sub: null,
     companyId: null,
     role: null,
@@ -42,8 +41,13 @@ export class AuthService {
   }
 
   logout() {
-    sessionStorage.removeItem(STORAGE_KEY);
-    this.stateSubject.next({ token: null, sub: null, companyId: null, role: null });
+    sessionStorage.removeItem(SESSION_TOKEN_KEY);
+    this.stateSubject.next({
+      token: null,
+      sub: null,
+      companyId: null,
+      role: null,
+    });
   }
 
   get token() {
@@ -58,7 +62,7 @@ export class AuthService {
 
   private setSession(token: string) {
     if (!token) throw new Error('Token ausente na resposta');
-    sessionStorage.setItem(STORAGE_KEY, token);
+    sessionStorage.setItem(SESSION_TOKEN_KEY, token);
     this.updateClaims(token);
   }
 

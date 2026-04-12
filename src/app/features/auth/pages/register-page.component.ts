@@ -40,9 +40,23 @@ export class RegisterPageComponent {
   private router = inject(Router);
 
   form = this.fb.group({
-    companyName: ['', [Validators.required]],
+    companyName: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(2),
+        Validators.maxLength(120),
+      ],
+    ],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    password: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.maxLength(72),
+      ],
+    ],
   });
 
   loading = false;
@@ -57,7 +71,10 @@ export class RegisterPageComponent {
       next: () => this.router.navigate(['/dashboard']),
       error: (err) => {
         this.loading = false;
-        this.error = err.error?.message ?? 'Erro ao registrar';
+        const fe = err.error?.fieldErrors as Record<string, string> | undefined;
+        const firstField =
+          fe && Object.keys(fe).length ? Object.values(fe)[0] : undefined;
+        this.error = firstField ?? err.error?.message ?? 'Erro ao registar';
       },
     });
   }

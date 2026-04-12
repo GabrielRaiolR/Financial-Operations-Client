@@ -3,6 +3,7 @@ export interface LoginRequest {
   password: string;
 }
 
+/** Login: o backend devolve só `acessToken` (nome do campo no Java). Mantém `accessToken?` por tolerância a proxies ou versões futuras. */
 export interface LoginResponse {
   acessToken?: string;
   accessToken?: string;
