@@ -10,6 +10,8 @@ import { AuthService } from '../../../core/services/auth.service';
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
     <div class="auth-layout">
+      <div class="auth-layout__bg" aria-hidden="true"></div>
+      <div class="auth-layout__scrim" aria-hidden="true"></div>
       <section class="card auth-card">
         <p class="auth-card__brand">Financial Operations</p>
         <h1 class="auth-card__title">Login</h1>
