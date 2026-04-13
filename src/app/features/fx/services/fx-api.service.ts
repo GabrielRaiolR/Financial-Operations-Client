@@ -8,6 +8,20 @@ export interface FxRateResponse {
   to: string;
   asOf: string;
   source: string;
+  /** Frankfurter daily rate date (yyyy-MM-dd, UTC calendar day). */
+  referenceDate?: string;
+}
+
+export interface FxHistoryPoint {
+  date: string;
+  rate: number;
+}
+
+export interface FxHistoryResponse {
+  from: string;
+  to: string;
+  source: string;
+  points: FxHistoryPoint[];
 }
 
 @Injectable({
@@ -19,6 +33,17 @@ export class FxApiService {
   getRate(from: string, to: string) {
     const params = new HttpParams().set('from', from).set('to', to);
     return this.http.get<FxRateResponse>(`${environment.apiUrl}/fx/rate`, {
+      params,
+    });
+  }
+
+  /** Daily rates for the last `days` UTC calendar days (inclusive of today). */
+  getHistory(from: string, to: string, days = 5) {
+    const params = new HttpParams()
+      .set('from', from)
+      .set('to', to)
+      .set('days', String(days));
+    return this.http.get<FxHistoryResponse>(`${environment.apiUrl}/fx/history`, {
       params,
     });
   }

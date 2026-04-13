@@ -41,4 +41,21 @@ describe('FxApiService', () => {
       source: 'test',
     });
   });
+
+  it('getHistory() should GET /fx/history with from, to and days', () => {
+    service.getHistory('USD', 'BRL', 5).subscribe();
+    const req = httpMock.expectOne(
+      (r) => r.url === `${environment.apiUrl}/fx/history`,
+    );
+    expect(req.request.method).toBe('GET');
+    expect(req.request.params.get('from')).toBe('USD');
+    expect(req.request.params.get('to')).toBe('BRL');
+    expect(req.request.params.get('days')).toBe('5');
+    req.flush({
+      from: 'USD',
+      to: 'BRL',
+      source: 'test',
+      points: [{ date: '2026-04-08', rate: 5.5 }],
+    });
+  });
 });
